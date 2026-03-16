@@ -5,7 +5,7 @@ idf_component_register(
         "web_server.c"
         "adc_reader.c"
     PRIV_REQUIRES
-        esp_wifi nvs_flash esp_http_server esp_adc
+        esp_wifi nvs_flash esp_http_server esp_adc mdns
     INCLUDE_DIRS "."
     EMBED_TXTFILES
         index.html style.css script.js)

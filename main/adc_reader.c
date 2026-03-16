@@ -27,3 +27,9 @@ int adc_reader_get(void)
     adc_oneshot_read(adc1_handle, ADC_CHANNEL, &raw);
     return raw;
 }
+
+float adc_reader_get_voltage(void)
+{
+    // ADC_ATTEN_DB_12: 측정 범위 0 ~ 3.1V (ESP32-C3)
+    return adc_reader_get() / 4095.0f * 3.1f;
+}

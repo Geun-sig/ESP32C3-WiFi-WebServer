@@ -5,6 +5,9 @@
 #include "esp_event.h"
 #include "esp_log.h"
 #include "esp_netif.h"
+#include "mdns.h"
+
+#define MDNS_HOSTNAME    "esp32"
 
 #define WIFI_SSID        "my_network"
 #define WIFI_PASS        "my_password"
@@ -81,4 +84,11 @@ void wifi_init_softap(void)
 
     ESP_LOGI(TAG, "SoftAP started. SSID:%s password:%s channel:%d",
              WIFI_SSID, WIFI_PASS, WIFI_CHANNEL);
+
+    // mDNS 초기화
+    ESP_ERROR_CHECK(mdns_init());
+    ESP_ERROR_CHECK(mdns_hostname_set(MDNS_HOSTNAME));
+    ESP_ERROR_CHECK(mdns_instance_name_set("ESP32 SoftAP"));
+    mdns_service_add(NULL, "_http", "_tcp", 80, NULL, 0);
+    ESP_LOGI(TAG, "mDNS started. Access: http://%s.local", MDNS_HOSTNAME);
 }

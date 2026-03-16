@@ -89,6 +89,8 @@
 		"D:/esp-test/softAP/build/esp-idf/http_parser/cmake_install.cmake",
 		"D:/esp-test/softAP/build/esp-idf/esp_http_server/cmake_install.cmake",
 		"D:/esp-test/softAP/build/esp-idf/esp_adc/cmake_install.cmake",
+		"D:/esp-test/softAP/build/esp-idf/console/cmake_install.cmake",
+		"D:/esp-test/softAP/build/esp-idf/espressif__mdns/cmake_install.cmake",
 		"D:/esp-test/softAP/build/esp-idf/main/cmake_install.cmake"
 	],
 	"Parallel" : false

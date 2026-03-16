@@ -8,9 +8,17 @@
   <script src="/script.js" defer></script>
 </head>
 <body>
+
+  <div id="wsOverlay">
+    <div id="wsOverlayBox">
+      <div class="spinner"></div>
+      <p>Reconnecting...</p>
+    </div>
+  </div>
+
   <div class="card">
     <h1>Hello, ESP32!</h1>
-    <span class="badge">● Online</span>
+    <span class="badge" id="badge">● Online</span>
 
     <div class="grid">
       <div class="grid-left">
@@ -24,14 +32,20 @@
         </table>
         <div class="note">
           ESP32가 WiFi Access Point로 동작 중입니다.<br>
-          브라우저에서 <b>http://192.168.4.1</b> 로 접속하세요.
+          브라우저에서 <b>http://esp32.local</b> 또는 <b>http://192.168.4.1</b> 로 접속하세요.
+        </div>
+
+        <div class="slider-box">
+          <label>Update Interval: <b id="intervalLabel">500ms</b></label>
+          <input type="range" id="intervalSlider" min="100" max="5000" step="100" value="500">
+          <div class="slider-range"><span>100ms</span><span>5000ms</span></div>
         </div>
       </div>
 
       <div class="grid-right">
         <h2>WiFi Signal Strength (RSSI)</h2>
         <canvas id="rssiChart"></canvas>
-        <p id="rssiStatus">Loading...</p>
+        <p id="rssiStatus">Connecting...</p>
 
         <h2>ADC (GPIO2 / CH2)</h2>
         <canvas id="noiseChart"></canvas>

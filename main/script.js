@@ -169,23 +169,21 @@ function drawChart(hoverIndex = -1, resize = true) {
   }
 }
 
-function fetchStatus() {
-  fetch('/api/status')
-    .then(r => r.text().then(text => {
-      document.getElementById('rssiStatus').textContent = 'Raw: ' + text;
-      return JSON.parse(text);
-    }))
-    .then(data => {
-      const t = new Date().toLocaleTimeString();
-      history.push({ time: t, stations: data.stations });
-      if (history.length > maxSamples) history.shift();
-      drawChart(-1, true);
-      document.getElementById('rssiStatus').textContent =
-        'Connected: ' + data.stations.length + ' station(s)  |  Updated: ' + t;
-    })
-    .catch(e => {
-      document.getElementById('rssiStatus').textContent = 'Error: ' + e.message;
-    });
+function onWsData(data) {
+  const t = new Date().toLocaleTimeString();
+
+  history.push({ time: t, stations: data.stations });
+  if (history.length > maxSamples) history.shift();
+  drawChart(-1, true);
+
+  adcHistory.push(data.adc);
+  adcVoltageHistory.push(data.voltage);
+  if (adcHistory.length > maxAdcSamples) adcHistory.shift();
+  if (adcVoltageHistory.length > maxAdcSamples) adcVoltageHistory.shift();
+  drawAdcChart(-1, true);
+
+  document.getElementById('rssiStatus').textContent =
+    'Connected: ' + data.stations.length + ' station(s)  |  Updated: ' + t;
 }
 
 // RSSI hover events
@@ -230,13 +228,14 @@ function drawAdcChart(hoverIndex = -1, resize = true) {
   ctx.textAlign = 'right';
   for (const v of [0, 1024, 2048, 3072, 4095]) {
     const gy = padT + chartH - (v / maxAdc) * chartH;
+    const vLabel = (v / 4095 * 3.1).toFixed(2) + 'V';
     ctx.beginPath();
     ctx.setLineDash(v === 0 || v === 4095 ? [] : [4, 4]);
     ctx.moveTo(padL, gy);
     ctx.lineTo(padL + chartW, gy);
     ctx.stroke();
     ctx.setLineDash([]);
-    ctx.fillText(v, padL - 4, gy + 4);
+    ctx.fillText(vLabel, padL - 4, gy + 4);
   }
 
   if (adcHistory.length < 2) {
@@ -267,7 +266,8 @@ function drawAdcChart(hoverIndex = -1, resize = true) {
   ctx.fillStyle = '#e67e22';
   ctx.font = 'bold 11px Arial';
   ctx.textAlign = 'left';
-  ctx.fillText(lastVal, lx + 6, ly + 4);
+  const lastVoltage = adcVoltageHistory[adcVoltageHistory.length - 1];
+  ctx.fillText(lastVal + ' (' + (lastVoltage !== undefined ? lastVoltage.toFixed(3) + 'V' : '') + ')', lx + 6, ly + 4);
 
   // hover tooltip
   if (hoverIndex >= 0 && hoverIndex < adcHistory.length) {
@@ -283,7 +283,11 @@ function drawAdcChart(hoverIndex = -1, resize = true) {
     ctx.stroke();
     ctx.setLineDash([]);
 
-    drawTooltip(ctx, hx, ['ADC: ' + adcHistory[hoverIndex]], W);
+    const hVoltage = adcVoltageHistory[hoverIndex];
+    drawTooltip(ctx, hx, [
+      'ADC: ' + adcHistory[hoverIndex],
+      'Voltage: ' + (hVoltage !== undefined ? hVoltage.toFixed(3) + ' V' : '-')
+    ], W);
 
     ctx.beginPath();
     ctx.arc(hx, hy, 5, 0, 2 * Math.PI);
@@ -295,16 +299,7 @@ function drawAdcChart(hoverIndex = -1, resize = true) {
   }
 }
 
-function fetchAdc() {
-  fetch('/api/adc')
-    .then(r => r.json())
-    .then(data => {
-      adcHistory.push(data.adc);
-      if (adcHistory.length > maxAdcSamples) adcHistory.shift();
-      drawAdcChart(-1, true);
-    })
-    .catch(() => {});
-}
+const adcVoltageHistory = [];
 
 // ADC hover events
 const adcCanvas = document.getElementById('noiseChart');
@@ -320,8 +315,54 @@ adcCanvas.addEventListener('mousemove', e => {
 });
 adcCanvas.addEventListener('mouseleave', () => drawAdcChart(-1, false));
 
-fetchStatus();
-setInterval(fetchStatus, 3000);
+// WebSocket
+let ws = null;
+let wsReconnectTimer = null;
 
-fetchAdc();
-setInterval(fetchAdc, 200);
+function connectWebSocket() {
+  if (ws && (ws.readyState === WebSocket.CONNECTING || ws.readyState === WebSocket.OPEN)) return;
+
+  ws = new WebSocket('ws://' + location.host + '/ws');
+
+  ws.onopen = () => {
+    const overlay = document.getElementById('wsOverlay');
+    overlay.style.display = 'none';
+    const badge = document.getElementById('badge');
+    badge.textContent = '● Online';
+    badge.className = 'badge';
+    if (wsReconnectTimer) { clearTimeout(wsReconnectTimer); wsReconnectTimer = null; }
+  };
+
+  ws.onmessage = e => {
+    try {
+      const data = JSON.parse(e.data);
+      onWsData(data);
+    } catch (_) {}
+  };
+
+  ws.onclose = ws.onerror = () => {
+    const overlay = document.getElementById('wsOverlay');
+    overlay.style.display = 'flex';
+    const badge = document.getElementById('badge');
+    badge.textContent = '● Offline';
+    badge.className = 'badge badge-offline';
+    if (!wsReconnectTimer) {
+      wsReconnectTimer = setTimeout(() => {
+        wsReconnectTimer = null;
+        connectWebSocket();
+      }, 2000);
+    }
+  };
+}
+
+connectWebSocket();
+
+const intervalSlider = document.getElementById('intervalSlider');
+const intervalLabel  = document.getElementById('intervalLabel');
+intervalSlider.addEventListener('input', () => {
+  const ms = parseInt(intervalSlider.value, 10);
+  intervalLabel.textContent = ms + 'ms';
+  if (ws && ws.readyState === WebSocket.OPEN) {
+    ws.send(JSON.stringify({ interval: ms }));
+  }
+});

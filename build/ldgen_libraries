@@ -126,5 +126,9 @@ D:/esp-test/softAP/build/esp-idf/esp_wifi/libesp_wifi.a
 D:/esp-test/softAP/build/esp-idf/http_parser/libhttp_parser.a
 D:/esp-test/softAP/build/esp-idf/esp_http_server/libesp_http_server.a
 D:/esp-test/softAP/build/esp-idf/esp_adc/libesp_adc.a
+D:/esp-test/softAP/build/esp-idf/console/libconsole.a
+D:/esp-test/softAP/build/esp-idf/espressif__mdns/libespressif__mdns.a
+D:/esp-test/softAP/build/esp-idf/console/libconsole.a
 D:/esp-test/softAP/build/esp-idf/main/libmain.a
 D:/esp-test/softAP/build/esp-idf/esp_adc/libesp_adc.a
+D:/esp-test/softAP/build/esp-idf/espressif__mdns/libespressif__mdns.a
