@@ -1,0 +1,23 @@
+Command: ninja all
+[1/14] Generating ../../index.html.S
+[2/14] Generating ../../style.css.S
+[3/14] Generating ../../script.js.S
+[4/14] Performing build step for 'bootloader'
+[1/1] C:\Windows\system32\cmd.exe /C "cd /D D:\esp-test\softAP\build\bootloader && C:\Users\user\.espressif\python_env\idf6.1_py3.13_env\Scripts\python.exe D:/esp/esp-idf/components/partition_table/check_sizes.py --offset 0x8000 bootloader 0x0 D:/esp-test/softAP/build/bootloader/bootloader.bin"
+Bootloader binary size 0x5250 bytes. 0x2db0 bytes (36%) free.
+[5/14] No install step for 'bootloader'
+[6/14] Building ASM object esp-idf/main/CMakeFiles/__idf_main.dir/__/__/index.html.S.obj
+[7/14] Building ASM object esp-idf/main/CMakeFiles/__idf_main.dir/__/__/script.js.S.obj
+[8/14] Building ASM object esp-idf/main/CMakeFiles/__idf_main.dir/__/__/style.css.S.obj
+[9/14] Completed 'bootloader'
+[10/14] Linking C static library esp-idf\main\libmain.a
+[11/14] Generating esp-idf/esp_system/ld/sections.ld
+[12/14] Linking CXX executable wifi_softAP.elf
+[13/14] Generating binary image from built executable
+esptool v5.2.0
+Creating ESP32-C3 image...
+Merged 3 ELF sections.
+Successfully created ESP32-C3 image.
+Generated D:/esp-test/softAP/build/wifi_softAP.bin
+[14/14] C:\Windows\system32\cmd.exe /C "cd /D D:\esp-test\softAP\build && C:\Users\user\.espressif\python_env\idf6.1_py3.13_env\Scripts\python.exe D:/esp/esp-idf/components/partition_table/check_sizes.py --offset 0x8000 partition --type app D:/esp-test/softAP/build/partition_table/partition-table.bin D:/esp-test/softAP/build/wifi_softAP.bin"
+wifi_softAP.bin binary size 0xcddb0 bytes. Smallest app partition is 0x100000 bytes. 0x32250 bytes (20%) free.

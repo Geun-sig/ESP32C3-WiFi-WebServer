@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ESP32 SoftAP</title>
+  <link rel="stylesheet" href="/style.css">
+  <script src="/script.js" defer></script>
+</head>
+<body>
+  <div class="card">
+    <h1>Hello, ESP32!</h1>
+    <span class="badge">● Online</span>
+
+    <div class="grid">
+      <div class="grid-left">
+        <h2>WiFi SoftAP 정보</h2>
+        <table>
+          <tr><td>SSID</td><td>my_network</td></tr>
+          <tr><td>Channel</td><td>1</td></tr>
+          <tr><td>Max Connections</td><td>4</td></tr>
+          <tr><td>Security</td><td>WPA2-PSK</td></tr>
+          <tr><td>IP Address</td><td>192.168.4.1</td></tr>
+        </table>
+        <div class="note">
+          ESP32가 WiFi Access Point로 동작 중입니다.<br>
+          브라우저에서 <b>http://192.168.4.1</b> 로 접속하세요.
+        </div>
+      </div>
+
+      <div class="grid-right">
+        <h2>WiFi Signal Strength (RSSI)</h2>
+        <canvas id="rssiChart"></canvas>
+        <p id="rssiStatus">Loading...</p>
+
+        <h2>ADC (GPIO2 / CH2)</h2>
+        <canvas id="noiseChart"></canvas>
+      </div>
+    </div>
+  </div>
+</body>
+</html>
